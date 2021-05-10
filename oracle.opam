@@ -1,0 +1,30 @@
+opam-version: "2.0"
+synopsis: "Oracle sort implementation"
+description:
+  "This package exposes function for oracle sorting (also known as external sorting)."
+maintainer: "gabriel.belouze@tarides.com"
+authors: "Gabriel Belouze"
+license: "MIT"
+homepage: "https://github.com/gbelouze/tarides-gabriel-internship/"
+bug-reports:
+  "https://github.com/gbelouze/tarides-gabriel-internship/issues/"
+depends: [
+  "dune" {>= "2.0"}
+  "ocaml" {>= "4.08.0"}
+]
+build: [
+  ["dune" "subst"] {dev}
+  [
+    "dune"
+    "build"
+    "-p"
+    name
+    "-j"
+    jobs
+    "@install"
+    "@runtest" {with-test}
+    "@doc" {with-doc}
+  ]
+]
+dev-repo:
+  "git+https://github.com/gbelouze/tarides-gabriel-internship.git"

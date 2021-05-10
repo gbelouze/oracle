@@ -1,0 +1,4 @@
+(library
+ (name oracle)
+ (public_name oracle)
+ (libraries fmt unix logs progress.unix))

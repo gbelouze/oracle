@@ -1,0 +1,9 @@
+(test
+ (name main)
+ (modules main)
+ (libraries oracle alcotest))
+
+(executable
+ (name prog)
+ (modules prog)
+ (libraries oracle progress.unix))
