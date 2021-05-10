@@ -54,11 +54,11 @@ module Make (V : VALUE) (H : HYPER) = struct
     type t = { fd : Unix.file_descr; buff : bytes; mutable off : int; mutable length : int }
 
     let v ~tmp arr =
-      let fd = openfile tmp [ O_CREAT; O_TRUNC; O_WRONLY; O_APPEND ] 0o655 in
+      let fd = openfile tmp [ O_CREAT; O_TRUNC; O_WRONLY; O_APPEND ] 0o644 in
       Array.iter (write_string fd) arr;
       assert (file_size fd mod V.encode_sz = 0);
       close fd;
-      let fd = openfile tmp [ O_RDONLY ] 0o655 in
+      let fd = openfile tmp [ O_RDONLY ] 0o644 in
       lseek fd 0 SEEK_SET |> ignore;
       {
         fd;
@@ -68,7 +68,7 @@ module Make (V : VALUE) (H : HYPER) = struct
       }
 
     let init ~tmp n f =
-      let fd = openfile tmp [ O_CREAT; O_TRUNC; O_WRONLY; O_APPEND ] 0o655 in
+      let fd = openfile tmp [ O_CREAT; O_TRUNC; O_WRONLY; O_APPEND ] 0o644 in
       let last = ref "" in
       let buff = Bytes.make (V.encode_sz * buffsize) '\000' in
       for i = 0 to n - 1 do
@@ -85,13 +85,13 @@ module Make (V : VALUE) (H : HYPER) = struct
           assert (write_sz = V.encode_sz * (offset + 1))
       done;
       close fd;
-      let fd = openfile tmp [ O_RDONLY ] 0o655 in
+      let fd = openfile tmp [ O_RDONLY ] 0o644 in
       lseek fd 0 SEEK_SET |> ignore;
       { fd; buff = Bytes.make (V.encode_sz * buffsize) '\000'; off = buffsize; length = n }
 
     let load ~tmp n =
       Log.debug (fun reporter -> reporter "Loading %s from cache" (tmp |> file_name));
-      let fd = openfile tmp [ O_RDONLY ] 0o655 in
+      let fd = openfile tmp [ O_RDONLY ] 0o644 in
       assert (file_size fd mod V.encode_sz = 0);
       lseek fd 0 SEEK_SET |> ignore;
       { fd; buff = Bytes.make (V.encode_sz * buffsize) '\000'; off = buffsize; length = n }
