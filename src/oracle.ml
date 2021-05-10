@@ -162,7 +162,7 @@ module Make (V : VALUE) (H : HYPER) = struct
     let tot = buckets |> List.map Bucket.length |> List.fold_left ( + ) 0 in
     let bucket =
       Bucket.init ~tmp:out tot (fun i ->
-          if i mod (tot / 10_000) = 0 then prog (tot / 10_000 |> Int64.of_int);
+          if (i+1) mod (tot / 10_000) = 0 then prog (tot / 10_000 |> Int64.of_int);
           let argmini = buckets |> argmin in
           argmini |> List.nth buckets |> Bucket.pop)
     in
