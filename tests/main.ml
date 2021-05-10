@@ -1,22 +1,10 @@
 module V = struct
-  type t = string
-
-  let compare = String.compare
-
-  let encode_sz = 15
-
-  let encode s =
-    assert (String.length s = encode_sz);
-    s
+  include (val Oracle.stringv ~encode_sz:15)
 
   let decode = encode
 end
 
-module H = struct
-  let ram = 10_000
-
-  let kway = 30
-end
+module H = Oracle.Default
 
 module Sort = Oracle.Make (V) (H)
 
