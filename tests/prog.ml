@@ -31,6 +31,8 @@ let random_v () = String.init (V.encode_sz - 1) random_char ^ "\n"
 let run n =
   let oracle = random_v in
   let root = "test_progress" in
+  if not (Sys.file_exists "_tests") then Unix.mkdir "_tests" 0o777;
+  let root = "_tests/progress" in
   if not (Sys.file_exists root) then Unix.mkdir root 0o777;
   let out = root ^ "/" ^ "out" in
   Sort.sort ~with_prog:true ~oracle ~out n
