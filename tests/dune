@@ -7,3 +7,8 @@
  (name prog)
  (modules prog)
  (libraries oracle progress.unix))
+
+(executable
+ (name perf)
+ (modules perf)
+ (libraries oracle mtime.clock.os mtime fmt))
