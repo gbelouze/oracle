@@ -146,15 +146,24 @@ module Make (V : VALUE) (H : HYPER) = struct
             (i, peek) ipeeks
     in
     argmini
-
+    
   let with_progress_bar ~message ~n ~unit =
+    let open Progress in
+    let w = if n = 0 then 1 else float_of_int n |> log10 |> floor |> int_of_float |> succ in
+    let w_pp = Printer.int ~width:w in
     let bar =
-      let w = if n = 0 then 1 else float_of_int n |> log10 |> floor |> int_of_float |> succ in
-      let pp fmt i = Format.fprintf fmt "%*Ld/%*d %s" w i w n unit in
-      let pp f = f ~width:(w + 1 + w + 1 + String.length unit) pp in
-      Progress_unix.counter ~mode:`ASCII ~width:79 ~total:(Int64.of_int n) ~message ~pp ()
+      Line.(
+        list
+          [
+            const message;
+            count_to ~pp:w_pp n;
+            const unit;
+            elapsed ();
+            bar ~style:`UTF8 ~color:(`magenta |> Color.ansi) n;
+            eta n |> brackets;
+          ])
     in
-    Progress_unix.with_reporters bar
+    Progress.with_reporter bar
 
   let no_op _ = ()
 
@@ -162,21 +171,21 @@ module Make (V : VALUE) (H : HYPER) = struct
     let tot = buckets |> List.map Bucket.length |> List.fold_left ( + ) 0 in
     let bucket =
       Bucket.init ~tmp:out tot (fun i ->
-          if (i+1) mod (tot / 10_000) = 0 then prog (tot / 10_000 |> Int64.of_int);
+          if (i+1) mod (tot / 10_000) = 0 then prog (tot / 10_000);
           let argmini = buckets |> argmin in
           argmini |> List.nth buckets |> Bucket.pop)
     in
-    prog (tot mod (tot / 10_000) |> Int64.of_int);
+    prog (tot mod (tot / 10_000) );
     bucket
 
   let rec sort ~prog ~oracle ~out n =
     if Sys.file_exists out then (
-      prog 1L;
+      prog 1;
       Bucket.load ~tmp:out n)
     else if n < ram then (
       let ret = Array.init n (fun _ -> oracle () |> V.encode) in
       Array.sort String.compare ret;
-      prog @@ Int64.of_int @@ n;
+      prog n;
       Bucket.v ~tmp:out ret)
     else
       let ns = List.init kway (fun i -> if i = 0 then (n / kway) + (n mod kway) else n / kway) in

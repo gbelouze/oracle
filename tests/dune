@@ -6,7 +6,7 @@
 (executable
  (name prog)
  (modules prog)
- (libraries oracle progress.unix))
+ (libraries oracle progress))
 
 (executable
  (name perf)
